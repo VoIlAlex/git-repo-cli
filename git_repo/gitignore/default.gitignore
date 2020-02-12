@@ -1,0 +1,25 @@
+# ======
+# IDEs
+# ======
+.vscode/
+.idea/
+.vs/
+
+# ======
+# Python
+# ======
+.pytest_cache/
+__pycache__/
+
+
+# ======
+# output
+# ======
+bin/
+build/
+target/
+
+# ======
+# Others
+# ======
+*.log
