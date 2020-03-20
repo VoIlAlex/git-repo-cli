@@ -25,52 +25,8 @@ sys.path.insert(0, my_code_dir)
 
 from . import config as cfg
 from . import utils
+from .utils import BeautifulFormatter, BeautifulLogger
 from .parse_args import parse_args
-
-# TODO: access mode (public, private)
-
-
-class BeautifulFormatter(logging.Formatter):
-
-    warning_color = fg('yellow')
-    error_color = fg('red')
-    critical_color = fg('red')
-    info_color = fg('green')
-    debug_color = fg('grey_93')
-    default_color = fg('white')
-    reset_color = attr('reset')
-
-    def __init__(self):
-        logging.Formatter.__init__(self,
-                                   fmt='[%(asctime)s] %(levelname)s: %(message)s',
-                                   datefmt='%m/%d/%Y %I:%M:%S %p'
-                                   )
-
-    def format(self, record):
-        def set_color(color):
-            self._fmt = '[%(asctime)s] ' + color + '%(levelname)s' + \
-                self.reset_color + ': %(message)s'
-        original_format = self._fmt
-
-        if record.levelno == logging.DEBUG:
-            set_color(self.debug_color)
-        elif record.levelno == logging.INFO:
-            set_color(self.info_color)
-        elif record.levelno == logging.WARNING:
-            set_color(self.warning_color)
-        elif record.levelno == logging.ERROR:
-            set_color(self.error_color)
-        elif record.levelno == logging.CRITICAL:
-            set_color(self.critical_color)
-
-        record = logging.Formatter.format(self, record)
-        self._fmt = original_format
-        return record
-
-    @staticmethod
-    def create_formatter(color):
-        return logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s',
-                                 datefmt='%m/%d/%Y %I:%M:%S %p')
 
 
 class GitRepository:
@@ -79,9 +35,7 @@ class GitRepository:
         self.local_name = name.split(os.path.sep)[-1]
         self.remote_name = None
         self.gitignore = gitignore if gitignore is not None else []
-        self.logger = None
-
-        self.__setup_logger()
+        self.logger = utils.BeautifulLogger()
         if access_token:
             self.github = Github(access_token)
 
@@ -200,88 +154,6 @@ class GitRepository:
         filename = os.path.join(self.local_name, filename)
         return open(filename, mode)
 
-    def __setup_logger(self):
-        """Set up the logger for the tool."""
-
-        self.logger = logging.getLogger(__name__)
-        self.logger.handlers.clear()
-        self.logger.setLevel(logging.DEBUG)
-
-        # logging to file
-        logging_handler = logging.FileHandler(cfg.LOG_FILE_PATH)
-        logging_handler.setFormatter(
-            BeautifulFormatter.create_formatter(BeautifulFormatter.default_color))
-        logging_handler.setLevel(logging.DEBUG)
-        self.logger.addHandler(logging_handler)
-
-        # logging to console
-        logging_console_handler = logging.StreamHandler()
-        logging_console_handler.setFormatter(BeautifulFormatter())
-        logging_console_handler.setLevel(logging.DEBUG)
-        self.logger.addHandler(logging_console_handler)
-
-
-# def parse_args():
-#     DEFAULT_GITIGNORE = cfg.read_gitignore_template('default')
-#     DEFAULT_ACCESS_TOKEN = cfg.ACCESS_TOKEN
-
-#     parser = argparse.ArgumentParser()
-
-#     sp = parser.add_subparsers(dest='cmd')
-#     for cmd in ['config']:
-#         sp.add_parser(cmd, action='store_true')
-
-#     parser.add_argument(
-#         'name',
-#         help='name of git repository'
-#     )
-
-#     parser.add_argument(
-#         '-i', '--ignore',
-#         help='elements to ignore by git',
-#         default=DEFAULT_GITIGNORE,
-#         action='append',
-#         required=False
-#     )
-#     parser.add_argument(
-#         '-ait', '--add-ignore-template',
-#         help='add specified file as new ignore template'
-#     )
-#     parser.add_argument(
-#         '-it', '--ignore-template',
-#         help='gitignore template to use',
-#         default=None,
-#         action='append'
-#     )
-#     parser.add_argument(
-#         '-t', '--access-token',
-#         help='username of github account',
-#         default=DEFAULT_ACCESS_TOKEN,
-#         required=False
-#     )
-#     parser.add_argument(
-#         '-d', '--delete',
-#         help='delete specified repo',
-#         action='store_true'
-#     )
-#     parser.add_argument(
-#         '-dr', '--delete-remote',
-#         help='delete repo on remote',
-#         action='store_true'
-#     )
-#     parser.add_argument(
-#         '-da', '--delete-all',
-#         help='delete repo on remote and locally',
-#         action='store_true'
-#     )
-#     parser.add_argument(
-#         '-r', '--rename',
-#         help='rename repo remotely and locally',
-#         metavar="NAME"
-#     )
-#     args = parser.parse_args()
-#     return args
-
 
 def setup_args(args: argparse.Namespace):
     if args.ignore_template is not None:
@@ -305,7 +177,9 @@ def main():
         gitignore=args.ignore,
         access_token=args.access_token
     )
-    if args.delete:
+    if args.add_ignore_template is not None:
+        utils.save_gitignore_template(args.add_ignore_template)
+    elif args.delete:
         gr.delete()
     elif args.delete_remote:
         gr.delete_remote()
