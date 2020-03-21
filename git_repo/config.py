@@ -18,4 +18,4 @@ LOG_FILE_PATH = os.path.join(PACKAGE_DATA_PATH, 'git-repo.log')
 
 GITIGNORE_STORE_PATH = os.path.join(PACKAGE_DATA_PATH, 'gitignore')
 
-ACCESS_TOKEN = '10973fe9b2d32d5b4d0ba95e3966925869badf95'
+CONFIG_FILE_PATH = os.path.join(PACKAGE_DATA_PATH, 'git-repo.config')
