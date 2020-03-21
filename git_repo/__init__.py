@@ -15,6 +15,7 @@ import git
 import shutil
 import logging
 from colored import fg, bg, attr
+from typing import Iterable
 
 # make root dir visible
 # for importing
@@ -30,31 +31,40 @@ from .parse_args import parse_args
 
 
 class GitRepository:
-    def __init__(self, name, gitignore, access_token=None):
+    def __init__(self, name, access_token=None):
         self.path = name
         self.local_name = name.split(os.path.sep)[-1]
         self.remote_name = None
-        self.gitignore = gitignore if gitignore is not None else []
         self.logger = utils.BeautifulLogger()
         if access_token:
             self.github = Github(access_token)
 
-    def create_and_upload(self):
+    def create_and_upload(self, gitignore: Iterable = None, readme: Iterable = None):
+        if os.path.exists(self.local_name):
+            self.logger.error(
+                'Local repository with name {} already exists.'.format(self.path))
+            return None
+
+        gitignore = gitignore if gitignore is not None else []
+        readme = readme if readme is not None else ['# ' + self.local_name]
+
         # Create local repo
         self.logger.info('Initializing local repository...')
         repo_path = os.path.join(os.getcwd(), self.path)
+        if not os.path.exists(repo_path):
+            os.mkdir(repo_path)
         local_repo = git.Repo.init(repo_path)
 
         # Create README for the repo
         self.logger.info('Creating README...')
         with self.__open_in_local_repo('README.md', 'w+') as readme:
-            readme.write('# ' + self.local_name)
+            readme.writelines(readme)
 
         # Create .gitignore
         self.logger.info('Creating .gitignore...')
-        with self.__open_in_local_repo('.gitignore', 'w+') as gitignore:
-            for element in self.gitignore:
-                print(element, file=gitignore)
+        with self.__open_in_local_repo('.gitignore', 'w+') as gitignore_file:
+            for element in gitignore:
+                print(element, file=gitignore_file)
 
         self.logger.info('Making initial commit...')
         local_repo.git.add('.')
@@ -87,25 +97,19 @@ class GitRepository:
             'Repository "{}" has been created.'.format(self.local_name))
 
     def delete(self):
-        user = self.github.get_user()
-        self.logger.info('Trying to delete repository on remote...')
-        try:
-            if self.remote_name is None:
-                user.get_repo(self.local_name).delete()
-            else:
-                user.get_repo(self.remote_name).delete()
-        except github.GithubException:
-            self.logger.error(
-                "Cannot remove the repository. It doesn't exist on remote."
-            )
-        else:
-            self.logger.info(
-                'Repository has been successfully deleted on remote.')
+        self.delete_remote()
+        self.delete_local()
+
+    def delete_local(self):
+        """Delete the repository on local machine but hold on remote"""
         if os.path.exists(self.local_name):
             self.logger.info('Removing the repository locally...')
             shutil.rmtree(self.local_name)
             self.logger.info(
                 'Repository has been successfully deleted locally.')
+        else:
+            self.logger.error(
+                "Cannot remove the repository. It doesn't exist locally.")
 
     def delete_remote(self):
         """Delete the repository on remote but hold locally."""
@@ -155,41 +159,54 @@ class GitRepository:
         return open(filename, mode)
 
 
-def setup_args(args: argparse.Namespace):
-    if args.ignore_template is not None:
-        gitignore = utils.read_gitignore_template(args.ignore_template)
-        if gitignore is None:
-            logging.error(
-                'Failed to load gitignore template. "{}" doesn\'t exist'.format(
-                    gitignore
-                )
-            )
-            exit(1)
-        args.ignore = gitignore
-    return args
+def handle_config(args):
+    if args.list:
+        print('\n'.join(utils.get_config()))
+    elif args.token:
+        utils.set_config('github.token', args.token)
+
+
+def handle_init(args):
+    gr = GitRepository(
+        name=args.name,
+        access_token=args.token
+    )
+
+    # TODO: language-specific template
+    gr.create_and_upload(
+        gitignore=utils.read_gitignore_template('default')
+    )
+
+
+def handle_delete(args):
+    gr = GitRepository(
+        name=args.path,
+        access_token=args.token
+    )
+    if args.remote:
+        gr.delete_remote()
+    elif args.local:
+        gr.delete_local()
+    else:
+        gr.delete()
+
+
+def handle_rename(args):
+    gr = GitRepository(
+        name=args.path,
+        access_token=args.token
+    )
+    gr.rename(args.new_name)
 
 
 def main():
     args = parse_args()
-    args = setup_args(args)
-    gr = GitRepository(
-        name=args.name,
-        gitignore=args.ignore,
-        access_token=args.access_token
-    )
-    if args.add_ignore_template is not None:
-        utils.save_gitignore_template(args.add_ignore_template)
-    elif args.delete:
-        gr.delete()
-    elif args.delete_remote:
-        gr.delete_remote()
-    elif args.delete_all:
-        gr.delete_remote()
-        gr.delete()
-    elif args.rename:
-        gr.rename(args.rename)
-    else:
-        gr.create_and_upload()
+    {
+        'config': handle_config,
+        'init': handle_init,
+        'delete': handle_delete,
+        'rename': handle_rename
+    }[args.command](args)
 
 
 if __name__ == "__main__":

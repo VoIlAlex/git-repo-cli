@@ -13,16 +13,27 @@ import git_repo.config as cfg
 
 class PostInstallCommand(install):
     def run(self):
+        # setup package data folder
+        package_data_path = cfg.PACKAGE_DATA_PATH
+        if not os.path.exists(package_data_path):
+            os.makedirs(package_data_path)
+
+        # setup configuration file
+        config_file_path = cfg.CONFIG_FILE_PATH
+        if not os.path.exists(config_file_path):
+            with open(config_file_path, 'w+') as f:
+                pass
 
         # setup logging
-        log_folder = os.path.dirname(cfg.LOG_FILE_PATH)
-        if not os.path.exists(log_folder):
-            os.mkdir(log_folder)
+        log_file_path = os.path.dirname(cfg.LOG_FILE_PATH)
+        if not os.path.exists(log_file_path):
+            with open(log_file_path, 'w+') as f:
+                pass
 
         # setup gitignore templates
         templates_folder = cfg.GITIGNORE_STORE_PATH
         if not os.path.exists(templates_folder):
-            os.mkdir(templates_folder)
+            os.makedirs(templates_folder)
 
         default_gitignore = pkg_resources.resource_filename(
             'git_repo',
@@ -42,7 +53,7 @@ setup(
     name='git-repo',         # How you named your package folder (MyLib)
     packages=find_packages('.'),   # Chose the same as "name"
     # Start with a small number and increase it with every change you make
-    version='1.0.0-alpha',
+    version='2.0.0',
     # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     license='MIT',
     # Give a short description about your library
@@ -52,9 +63,9 @@ setup(
     # Provide either the link to your github or to your website
     url='https://github.com/VoIlAlex/git-repo',
     # I explain this later on
-    download_url='https://github.com/VoIlAlex/git-repo/archive/v1.0.0-alpha.tar.gz',
+    download_url='https://github.com/VoIlAlex/git-repo/archive/v2.0.0.tar.gz',
     # Keywords that define your package best
-    keywords=['VCS', 'Git', 'GitHub'],
+    keywords=['VCS', 'Git', 'GitHub', 'utility', 'cli'],
     scripts=['bin/git-repo'],
     install_requires=[            # I get to this in a second
         'PyGithub',
