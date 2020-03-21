@@ -105,3 +105,16 @@ def save_gitignore_template(file: str) -> None:
     template_file_path = os.path.join(
         cfg.GITIGNORE_STORE_PATH, file_name, '.gitignore')
     shutil.copyfile(file, template_file_path)
+
+
+def get_config(key: str = None):
+    with open(cfg.CONFIG_FILE_PATH, 'r') as config_file:
+        if key is None:
+            return config_file.readlines()
+        else:
+            for line in config_file:
+                config_key, config_value = line.split('=')
+                if config_key == key:
+                    return config_value
+
+
