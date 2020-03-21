@@ -1,6 +1,6 @@
 import os
 import sys
-from typing import List
+from typing import List, Any
 from . import config as cfg
 import shutil
 import logging
@@ -86,6 +86,13 @@ def read_gitignore_template(name: str) -> List[str]:
                 gitignore_template = gitignore_file.readlines()
             return gitignore_template
     return None
+
+
+def list_gitignore_choices():
+    files = os.listdir(cfg.GITIGNORE_STORE_PATH)
+    gitignore_files = [f for f in files if os.path.splitext(f)[
+        0] == '.gitignore']
+    return gitignore_files
 
 
 def save_gitignore_template(file: str) -> None:
