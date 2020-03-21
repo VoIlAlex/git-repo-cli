@@ -50,10 +50,10 @@ class PostInstallCommand(install):
 
 
 setup(
-    name='git-repo',         # How you named your package folder (MyLib)
+    name='git-repo-cli',         # How you named your package folder (MyLib)
     packages=find_packages('.'),   # Chose the same as "name"
     # Start with a small number and increase it with every change you make
-    version='2.0.0',
+    version='1.0.0',
     # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     license='MIT',
     # Give a short description about your library
@@ -63,7 +63,7 @@ setup(
     # Provide either the link to your github or to your website
     url='https://github.com/VoIlAlex/git-repo',
     # I explain this later on
-    download_url='https://github.com/VoIlAlex/git-repo/archive/v2.0.0.tar.gz',
+    download_url='https://github.com/VoIlAlex/git-repo/archive/v1.0.0.tar.gz',
     # Keywords that define your package best
     keywords=['VCS', 'Git', 'GitHub', 'utility', 'cli'],
     scripts=['bin/git-repo'],
@@ -84,7 +84,7 @@ setup(
         # Define that your audience are developers
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Version Control :: Git',
-        'Environment::Console'
+        'Environment :: Console',
         'License :: OSI Approved :: MIT License',   # Again, pick a license
         # Specify which python versions that you want to support
         'Programming Language :: Python :: 3',
