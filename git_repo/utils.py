@@ -118,3 +118,19 @@ def get_config(key: str = None):
                     return config_value
 
 
+def set_config(key: str, value: Any):
+    with open(cfg.CONFIG_FILE_PATH, 'r') as config_file:
+        config_content = config_file.readlines()
+
+    for i, line in enumerate(config_content):
+        config_key, config_value = line.split('=')
+        if config_key == key:
+            new_line = '='.join([config_key, value])
+            config_content[i] = new_line
+            break
+    else:
+        config_content.append('='.join([key, value]))
+
+    with open(cfg.CONFIG_FILE_PATH, 'w') as config_file:
+        config_file.truncate()
+        config_file.writelines(config_content)
