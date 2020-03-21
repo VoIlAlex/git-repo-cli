@@ -10,9 +10,9 @@ PACKAGE_PATH = os.path.dirname(os.path.realpath(__file__))
 # the data of the package
 PACKAGE_DATA_PATH = None
 if sys.platform == 'linux':
-    PACKAGE_DATA_PATH = os.path.join('/var/git-repo')
+    PACKAGE_DATA_PATH = os.path.join(os.getenv('HOME'), '.git-repo')
 elif sys.platform == 'win32':
-    PACKAGE_DATA_PATH = os.path.join(os.getenv('APPDATA'), 'git-repo')
+    PACKAGE_DATA_PATH = os.path.join(os.getenv('LOCALAPPDATA'), '.git-repo')
 
 LOG_FILE_PATH = os.path.join(PACKAGE_DATA_PATH, 'git-repo.log')
 
