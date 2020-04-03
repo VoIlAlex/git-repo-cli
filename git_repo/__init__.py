@@ -44,7 +44,7 @@ class GitRepository:
             origin_url = next(origin.urls)
             self.remote_name = origin_url.split(
                 os.path.sep)[-1].split('.git')[0]
-        except git.InvalidGitRepositoryError:
+        except git.GitError:
             self.remote_name = os.path.abspath(name).split(os.path.sep)[-1]
 
         self.logger = utils.BeautifulLogger()
