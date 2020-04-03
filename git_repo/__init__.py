@@ -31,10 +31,22 @@ from .parse_args import parse_args
 
 
 class GitRepository:
-    def __init__(self, name, access_token=None):
-        self.path = name
-        self.local_name = name.split(os.path.sep)[-1]
-        self.remote_name = None
+    def __init__(self, name, access_token=None, local_path=None):
+        self.path = os.path.abspath(name) if local_path is None else local_path
+        if local_path is None:
+            self.local_name = self.path.split(os.path.sep)[-1]
+        else:
+            self.local_name = os.path.abspath(
+                local_path).split(os.path.sep)[-1]
+        try:
+            local_repo = git.Repo(self.path)
+            origin = local_repo.remote('origin')
+            origin_url = next(origin.urls)
+            self.remote_name = origin_url.split(
+                os.path.sep)[-1].split('.git')[0]
+        except git.InvalidGitRepositoryError:
+            self.remote_name = os.path.abspath(name).split(os.path.sep)[-1]
+
         self.logger = utils.BeautifulLogger()
         if access_token:
             self.github = Github(access_token)
@@ -74,7 +86,6 @@ class GitRepository:
 
             # get unique name for github repo
             self.logger.info('Checking the name...')
-            self.remote_name = self.local_name
             repos = [repo.name for repo in user.get_repos()]
             while self.remote_name in repos:
                 self.logger.error('Repository name is not free.')
@@ -94,7 +105,7 @@ class GitRepository:
             local_repo.git.push('-u', 'origin', 'master')
 
         self.logger.info(
-            'Repository "{}" has been created.'.format(self.local_name))
+            'Repository "{}/{}" has been created.'.format(self.local_name, self.remote_name))
 
     def delete(self):
         self.delete_remote()
@@ -102,9 +113,9 @@ class GitRepository:
 
     def delete_local(self):
         """Delete the repository on local machine but hold on remote"""
-        if os.path.exists(self.local_name):
+        if os.path.exists(self.path):
             self.logger.info('Removing the repository locally...')
-            shutil.rmtree(self.local_name)
+            shutil.rmtree(self.path)
             self.logger.info(
                 'Repository has been successfully deleted locally.')
         else:
@@ -114,7 +125,8 @@ class GitRepository:
     def delete_remote(self):
         """Delete the repository on remote but hold locally."""
         user = self.github.get_user()
-        self.logger.info('Trying to delete repository on remote...')
+        self.logger.info(
+            'Trying to delete repository {} on remote...'.format(self.remote_name))
         try:
             if self.remote_name is None:
                 user.get_repo(self.local_name).delete()
@@ -155,7 +167,7 @@ class GitRepository:
             Like open(...), but 
             with the repo folder as cwd.
         """
-        filename = os.path.join(self.local_name, filename)
+        filename = os.path.join(self.path, filename)
         return open(filename, mode)
 
 
@@ -169,7 +181,8 @@ def handle_config(args):
 def handle_init(args):
     gr = GitRepository(
         name=args.name,
-        access_token=args.token
+        access_token=args.token,
+        local_path=args.folder
     )
 
     # TODO: language-specific template

@@ -38,6 +38,11 @@ def _parse_init(subparsers: argparse._SubParsersAction):
         '-l', '--language',
         help='language of the repository.'
     )
+    parser.add_argument(
+        '-f', '--folder',
+        help='initialize a specified folder',
+        required=False
+    )
 
 
 def _parse_config(subparsers: argparse._SubParsersAction):
@@ -85,6 +90,7 @@ def parse_args():
     )
 
     subparsers = parser.add_subparsers(dest='command')
+
     _parse_init(subparsers)
     _parse_delete(subparsers)
     _parse_config(subparsers)
