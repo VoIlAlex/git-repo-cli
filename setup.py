@@ -77,7 +77,6 @@ setup(
 
     # Keywords that define your package best
     keywords=['VCS', 'Git', 'GitHub', 'utility', 'cli'],
-    scripts=['bin/git-repo'],
     install_requires=[            # I get to this in a second
         'PyGithub',
         'GitPython',
