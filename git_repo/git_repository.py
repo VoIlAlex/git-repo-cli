@@ -3,8 +3,9 @@ import github
 import git
 import shutil
 from github import Github
-from . import utils
+from typing import Iterable
 from .utils import BeautifulFormatter, BeautifulLogger
+from . import utils
 
 
 class GitRepository:
