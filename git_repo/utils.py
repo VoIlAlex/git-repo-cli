@@ -78,7 +78,9 @@ def read_gitignore_template(name: str) -> List[str]:
     files = os.listdir(cfg.GITIGNORE_STORE_PATH)
     for file in files:
         gitignore_path = os.path.join(cfg.GITIGNORE_STORE_PATH, file)
-        gitignore_name, ext = os.path.splitext(gitignore_path)
+        _, gitignore_filename = os.path.split(gitignore_path)
+        gitignore_name, ext = os.path.splitext(gitignore_filename)
+
         if ext != '.gitignore':
             continue
         if gitignore_name == name:
