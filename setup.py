@@ -60,7 +60,7 @@ setup(
     name='git-repo-cli',         # How you named your package folder (MyLib)
     packages=find_packages('.'),   # Chose the same as "name"
     # Start with a small number and increase it with every change you make
-    version='1.1.2',
+    version='1.2.0',
     # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     license='MIT',
     # Give a short description about your library
@@ -73,7 +73,7 @@ setup(
     # Provide either the link to your github or to your website
     url='https://github.com/VoIlAlex/git-repo-cli',
     # I explain this later on
-    download_url='https://github.com/VoIlAlex/git-repo/archive/v1.1.2.tar.gz',
+    download_url='https://github.com/VoIlAlex/git-repo/archive/v1.2.0.tar.gz',
 
     # Keywords that define your package best
     keywords=['VCS', 'Git', 'GitHub', 'utility', 'cli'],
@@ -91,7 +91,7 @@ setup(
     },
     classifiers=[
         # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         # Define that your audience are developers
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Version Control :: Git',
@@ -102,5 +102,10 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
-    ]
+    ],
+    entry_points="""
+    [console_scripts]
+    git-repo = git_repo.cli:cli
+    """,
+    zip_safe=False
 )
