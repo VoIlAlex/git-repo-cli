@@ -32,12 +32,11 @@ from .parse_args import parse_args
 
 class GitRepository:
     def __init__(self, name, access_token=None, local_path=None):
-        self.path = os.path.abspath(name) if local_path is None else local_path
+        self.path = os.path.abspath(name) if local_path is None else os.path.abspath(local_path)
         if local_path is None:
             self.local_name = self.path.split(os.path.sep)[-1]
         else:
-            self.local_name = os.path.abspath(
-                local_path).split(os.path.sep)[-1]
+            self.local_name = name
         try:
             local_repo = git.Repo(self.path)
             origin = local_repo.remote('origin')
