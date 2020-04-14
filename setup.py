@@ -10,6 +10,13 @@ sys.path.insert(0, script_path)
 
 import git_repo.config as cfg
 
+# User-friendly description from README.md
+current_directory = os.path.dirname(os.path.abspath(__file__))
+try:
+    with open(os.path.join(current_directory, 'README.md'), encoding='utf-8') as f:
+        long_description = f.read()
+except Exception:
+    long_description = ''
 
 class PostInstallCommand(install):
     def run(self):
@@ -53,17 +60,21 @@ setup(
     name='git-repo-cli',         # How you named your package folder (MyLib)
     packages=find_packages('.'),   # Chose the same as "name"
     # Start with a small number and increase it with every change you make
-    version='1.1.1',
+    version='1.1.2',
     # Chose a license from here: https://help.github.com/articles/licensing-a-repository
     license='MIT',
     # Give a short description about your library
     description='Utils to easily create/delete/rename repository.',
+    # Long description of your library
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Ilya Vouk',                   # Type in your name
     author_email='ilya.vouk@gmail.com',      # Type in your E-Mail
     # Provide either the link to your github or to your website
-    url='https://github.com/VoIlAlex/git-repo',
+    url='https://github.com/VoIlAlex/git-repo-cli',
     # I explain this later on
-    download_url='https://github.com/VoIlAlex/git-repo/archive/v1.1.1.tar.gz',
+    download_url='https://github.com/VoIlAlex/git-repo/archive/v1.1.2.tar.gz',
+
     # Keywords that define your package best
     keywords=['VCS', 'Git', 'GitHub', 'utility', 'cli'],
     scripts=['bin/git-repo'],
