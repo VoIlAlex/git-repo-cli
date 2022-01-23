@@ -2,7 +2,7 @@ import os
 import github
 import git
 import shutil
-from github import Github
+from github import Github, BadCredentialsException
 from typing import Iterable
 from .utils import BeautifulFormatter, BeautifulLogger
 from . import utils
@@ -138,6 +138,14 @@ class GitRepository:
             self.local_name = new_name
             self.logger.info(
                 'Repository has been successfully renamed locally.')
+
+    def check_token(self):
+        try:
+            user = self.github.get_user()
+            _ = user.name
+        except BadCredentialsException:
+            return False
+        return True
 
     def __open_in_local_repo(self, filename, mode):
         """
