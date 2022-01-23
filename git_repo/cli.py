@@ -57,11 +57,7 @@ def handle_rename(args):
 
 
 def handle_check_token(args):
-    gr = GitRepository(
-        name=args.path,
-        access_token=args.token
-    )
-    is_token_active = gr.check_token()
+    is_token_active = GitRepository.check_token(args.token)
     if not is_token_active:
         print('Token is not valid.')
         return

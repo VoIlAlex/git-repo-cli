@@ -139,9 +139,11 @@ class GitRepository:
             self.logger.info(
                 'Repository has been successfully renamed locally.')
 
-    def check_token(self):
+    @staticmethod
+    def check_token(access_token):
         try:
-            user = self.github.get_user()
+            github = Github(access_token)
+            user = github.get_user()
             _ = user.name
         except BadCredentialsException:
             return False
