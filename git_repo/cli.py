@@ -18,7 +18,7 @@ def handle_init(args):
     )
     is_token_active = GitRepository.check_token(args.token)
     if not is_token_active:
-        print('Token is not valid.')
+        print('Token is not valid ✕')
         return
 
     # TODO: language-specific template
@@ -34,7 +34,7 @@ def handle_delete(args):
     )
     is_token_active = GitRepository.check_token(args.token)
     if not is_token_active:
-        print('Token is not valid.')
+        print('Token is not valid ✕')
         return
     if args.remote:
         gr.delete_remote()
@@ -51,7 +51,7 @@ def handle_rename(args):
     )
     is_token_active = GitRepository.check_token(args.token)
     if not is_token_active:
-        print('Token is not valid.')
+        print('Token is not valid ✕')
         return
     gr.rename(args.new_name)
 
