@@ -16,7 +16,7 @@ def handle_init(args):
         access_token=args.token,
         local_path=args.folder
     )
-    is_token_active = gr.check_token()
+    is_token_active = GitRepository.check_token(args.token)
     if not is_token_active:
         print('Token is not valid.')
         return
@@ -32,7 +32,7 @@ def handle_delete(args):
         name=args.path,
         access_token=args.token
     )
-    is_token_active = gr.check_token()
+    is_token_active = GitRepository.check_token(args.token)
     if not is_token_active:
         print('Token is not valid.')
         return
@@ -49,7 +49,7 @@ def handle_rename(args):
         name=args.path,
         access_token=args.token
     )
-    is_token_active = gr.check_token()
+    is_token_active = GitRepository.check_token(args.token)
     if not is_token_active:
         print('Token is not valid.')
         return
