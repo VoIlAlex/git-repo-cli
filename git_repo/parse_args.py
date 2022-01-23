@@ -84,6 +84,7 @@ def _parse_rename(subparsers: argparse._SubParsersAction):
 
 def _parse_check_token(subparsers: argparse._SubParsersAction):
     parser = subparsers.add_parser('check-token')
+    parser.add_argument('path', help='path ot the repository to rename.')
 
 
 def parse_args():
