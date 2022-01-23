@@ -82,6 +82,10 @@ def _parse_rename(subparsers: argparse._SubParsersAction):
     parser.add_argument('new_name', help='new name to set.')
 
 
+def _parse_check_token(subparsers: argparse._SubParsersAction):
+    parser = subparsers.add_parser('check-token')
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -95,6 +99,7 @@ def parse_args():
     _parse_delete(subparsers)
     _parse_config(subparsers)
     _parse_rename(subparsers)
+    _parse_check_token(subparsers)
 
     args = parser.parse_args()
     args = _preproccess_args(args)
